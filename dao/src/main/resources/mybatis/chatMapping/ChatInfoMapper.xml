@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ppdai.qa.batme.dao.mapper.chat.ChatInfoMapper">
+    <resultMap id="BaseResultMap" type="com.ppdai.qa.batme.model.chat.entity.ChatInfo">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="employee_name" property="employee_name" jdbcType="VARCHAR"/>
+        <result column="create_time" property="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, title, content, employee_name, create_time
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from chat_info
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from chat_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.ppdai.qa.batme.model.chat.entity.ChatInfo">
+    insert into chat_info (id, title, content,
+      employee_name, create_time)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
+      #{employee_name,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.ppdai.qa.batme.model.chat.entity.ChatInfo">
+        insert into chat_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="employee_name != null">
+                employee_name,
+            </if>
+            <if test="create_time != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="employee_name != null">
+                #{employee_name,jdbcType=VARCHAR},
+            </if>
+            <if test="create_time != null">
+                #{create_time,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.ppdai.qa.batme.model.chat.entity.ChatInfo">
+        update chat_info
+        <set>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="employee_name != null">
+                employee_name = #{employee_name,jdbcType=VARCHAR},
+            </if>
+            <if test="create_time != null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.ppdai.qa.batme.model.chat.entity.ChatInfo">
+    update chat_info
+    set title = #{title,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      employee_name = #{employee_name,jdbcType=VARCHAR},
+      create_time = #{create_time,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <select id="searchList" resultMap="BaseResultMap"
+            parameterType="com.ppdai.qa.batme.model.chat.search.ChatInfoSearch">
+        select
+        <include refid="Base_Column_List"/>
+        from chat_info
+        where 1=1
+        <if test="searchKey != null and searchKey.length>0">
+            and (title like CONCAT('%',#{searchKey},'%'))
+        </if>
+        <if test="type !=null">
+            <if test="type==1">
+                order by id desc
+            </if>
+            <if test="type==2">
+                order by id desc
+            </if>
+            <if test="type==2">
+                order by id desc
+            </if>
+        </if>
+        <!--<if test="pageSize != null and pageNum !=null">-->
+            <!--limit #{startNum},#{pageSize}-->
+        <!--</if>-->
+
+         limit 100
+    </select>
+</mapper>

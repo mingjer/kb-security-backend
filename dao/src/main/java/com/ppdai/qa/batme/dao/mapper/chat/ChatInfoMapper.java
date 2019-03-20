@@ -17,4 +17,6 @@ public interface ChatInfoMapper {
 
 
     List<ChatInfo> searchList(ChatInfoSearch search);
+
+    Integer searchCount(ChatInfoSearch search);
 }

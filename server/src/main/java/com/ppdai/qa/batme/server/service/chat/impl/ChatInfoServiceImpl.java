@@ -25,4 +25,9 @@ public class ChatInfoServiceImpl implements IChatInfoService {
     public List<ChatInfo> searchList(ChatInfoSearch search) {
         return mapper.searchList(search);
     }
+
+    @Override
+    public Integer searchCount(ChatInfoSearch search) {
+        return mapper.searchCount(search);
+    }
 }

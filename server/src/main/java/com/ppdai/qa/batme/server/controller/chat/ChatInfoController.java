@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -25,7 +27,7 @@ public class ChatInfoController {
      * @param info
      * @return
      */
-    @RequestMapping(value = "/chatinfos", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/chatinfos")
     public GenericResponse add_chat(@RequestBody ChatInfo info) {
         GenericResponse response = new GenericResponse();
         try {
@@ -53,16 +55,37 @@ public class ChatInfoController {
     public GenericResponse search_chat_list(@RequestParam String searchKey, @RequestParam Integer type, @RequestParam Integer pageNum) {
         GenericResponse response = new GenericResponse();
         try {
-            List<ChatInfo> chatInfoList = chatInfoService.searchList(ChatInfoSearch.builder()
+            ChatInfoSearch search = ChatInfoSearch.builder()
                     .pageNum(pageNum)
                     .searchKey(searchKey)
                     .type(type)
-                    .build());
+                    .build();
+            List<ChatInfo> chatInfoList = chatInfoService.searchList(search);
+            Integer count = chatInfoService.searchCount(search);
+
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("count", count);
+            resultMap.put("dataList", chatInfoList);
             response.setStatus(ResponseConstants.SUCCESS_CODE);
-            response.setData(chatInfoList);
+            response.setData(resultMap);
         } catch (Exception e) {
             response.setStatus(ResponseConstants.FAIL_CODE);
             log.error("搜索chatinfo列表异常：" + e.getCause());
+        }
+        return response;
+
+    }
+
+
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public GenericResponse test(@RequestParam Integer a) {
+        GenericResponse response = new GenericResponse();
+        try {
+
+            response.setData(a);
+        } catch (Exception e) {
+            response.setStatus(ResponseConstants.FAIL_CODE);
+            log.error("test：" + e.getCause());
         }
         return response;
 

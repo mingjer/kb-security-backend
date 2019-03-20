@@ -27,7 +27,8 @@
     values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
       #{employee_name,jdbcType=VARCHAR}, #{create_time,jdbcType=TIMESTAMP})
   </insert>
-    <insert id="insertSelective" parameterType="com.ppdai.qa.batme.model.chat.entity.ChatInfo">
+    <insert id="insertSelective" parameterType="com.ppdai.qa.batme.model.chat.entity.ChatInfo"
+            useGeneratedKeys="true" keyProperty="id">
         insert into chat_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -107,14 +108,26 @@
             <if test="type==2">
                 order by id desc
             </if>
-            <if test="type==2">
-                order by id desc
-            </if>
         </if>
-        <!--<if test="pageSize != null and pageNum !=null">-->
-            <!--limit #{startNum},#{pageSize}-->
-        <!--</if>-->
+        <choose>
+            <when test="pageSize != null and pageNum !=null">
+                 limit #{startNum},#{pageSize}
+            </when>
+            <otherwise>
+                 limit 100
+            </otherwise>
+        </choose>
+    </select>
 
-         limit 100
+    <select id="searchCount" resultType="java.lang.Integer"
+            parameterType="com.ppdai.qa.batme.model.chat.search.ChatInfoSearch">
+        select
+        count(*)
+        from chat_info
+        where 1=1
+        <if test="searchKey != null and searchKey.length>0">
+            and (title like CONCAT('%',#{searchKey},'%'))
+        </if>
+
     </select>
 </mapper>

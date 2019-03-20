@@ -1,18 +1,19 @@
-package com.ppdai.qa.batme.model.chat.search;
+package com.ppdai.qa.batme.model.xss.search;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class ChatInfoSearch {
+public class XssInfoSearch {
     private String searchKey;
     @Builder.Default
     private Integer pageSize = 10;
     @Builder.Default
     private Integer pageNum = 1;
     private Integer startNum;
-    private Integer type;
+    @Builder.Default
+    private Integer type=0;
 
     public Integer getStartNum() {
         if (pageNum > 0) {

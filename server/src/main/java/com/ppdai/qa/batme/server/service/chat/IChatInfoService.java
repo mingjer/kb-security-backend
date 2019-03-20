@@ -9,4 +9,6 @@ public interface IChatInfoService {
     Integer insert(ChatInfo info);
 
     List<ChatInfo> searchList(ChatInfoSearch search);
+
+    Integer searchCount(ChatInfoSearch search);
 }

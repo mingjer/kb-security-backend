@@ -33,4 +33,9 @@ public class XssInfoServiceImpl implements IXssInfoService {
     public Integer searchCount(XssInfoSearch search) {
         return mapper.searchCount(search);
     }
+
+    @Override
+    public Integer update(XssInfo info) {
+        return mapper.updateByPrimaryKeySelective(info);
+    }
 }

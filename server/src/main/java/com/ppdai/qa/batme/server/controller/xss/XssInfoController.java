@@ -8,13 +8,11 @@ import com.ppdai.qa.batme.core.utils.PPStringUtils;
 import com.ppdai.qa.batme.model.xss.entity.XssInfo;
 import com.ppdai.qa.batme.model.xss.search.XssInfoSearch;
 import com.ppdai.qa.batme.server.service.xss.IXssInfoService;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -157,5 +155,21 @@ public class XssInfoController {
         }
         return response;
 
+    }
+
+    @RequestMapping(value = "/xssinfos/{id}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public GenericResponse xss_info_patch(@PathVariable("id") @NonNull Integer id, @RequestBody XssInfo xssInfo) {
+        GenericResponse response = new GenericResponse();
+        try {
+            xssInfo.setId(id);
+            Integer count = xssInfoService.update(xssInfo);
+            response.setStatus(ResponseConstants.SUCCESS_CODE);
+            response.setData(count);
+        } catch (Exception e) {
+            log.error("执行xss_info_patch异常：" + e.getCause());
+            response.setStatus(ResponseConstants.FAIL_CODE);
+        }
+
+        return response;
     }
 }

@@ -13,4 +13,6 @@ public interface IXssInfoService {
     List<XssInfo> searchList(XssInfoSearch search);
 
     Integer searchCount(XssInfoSearch search);
+
+    Integer update(XssInfo info);
 }

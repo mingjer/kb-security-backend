@@ -111,13 +111,48 @@
         </if>
         <choose>
             <when test="pageSize != null and pageNum !=null">
-                 limit #{startNum},#{pageSize}
+                limit #{startNum},#{pageSize}
             </when>
             <otherwise>
-                 limit 100
+                limit 100
             </otherwise>
         </choose>
     </select>
+
+
+    <select id="searchListNoSafe" resultMap="BaseResultMap"
+            parameterType="com.ppdai.qa.batme.model.chat.search.ChatInfoSearch">
+        select
+        <include refid="Base_Column_List"/>
+        from chat_info
+        where 1=1
+        <if test="employee_name != null and employee_name.length>0">
+            and employee_name =${employee_name}
+        </if>
+        <if test="searchKey != null and searchKey.length>0">
+            and title like '%${searchKey}%'
+        </if>
+        <if test="content != null and content.length>0">
+            and content like '${content}'
+        </if>
+        <if test="type !=null">
+            <if test="type==1">
+                order by id desc
+            </if>
+            <if test="type==2">
+                order by id desc
+            </if>
+        </if>
+        <choose>
+            <when test="pageSize != null and pageNum !=null">
+                limit #{startNum},#{pageSize}
+            </when>
+            <otherwise>
+                limit 100
+            </otherwise>
+        </choose>
+    </select>
+
 
     <select id="searchCount" resultType="java.lang.Integer"
             parameterType="com.ppdai.qa.batme.model.chat.search.ChatInfoSearch">
@@ -128,6 +163,13 @@
         <if test="searchKey != null and searchKey.length>0">
             and (title like CONCAT('%',#{searchKey},'%'))
         </if>
+        <if test="content != null and content.length>0">
+            and (content like CONCAT('%',#{content},'%'))
+        </if>
+        <if test="employee_name != null and employee_name.length>0">
+            and employee_name=#{employee_name}
+        </if>
+
 
     </select>
 </mapper>

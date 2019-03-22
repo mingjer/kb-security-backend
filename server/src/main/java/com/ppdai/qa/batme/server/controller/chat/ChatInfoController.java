@@ -1,5 +1,6 @@
 package com.ppdai.qa.batme.server.controller.chat;
 
+import com.alibaba.fastjson.JSON;
 import com.ppdai.qa.batme.contract.common.GenericResponse;
 import com.ppdai.qa.batme.core.constants.ResponseConstants;
 import com.ppdai.qa.batme.model.chat.entity.ChatInfo;
@@ -10,10 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.sql.*;
+import java.util.*;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -52,15 +52,24 @@ public class ChatInfoController {
      * @return
      */
     @RequestMapping(value = "/chatinfos/search", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public GenericResponse search_chat_list(@RequestParam String searchKey, @RequestParam Integer type, @RequestParam Integer pageNum) {
+    public GenericResponse search_chat_list(@RequestParam String searchKey, @RequestParam(required = false) Integer type, @RequestParam Integer pageNum, @RequestParam(required = false) Boolean openSqlHack, @RequestParam(required = false) String employee_name) {
         GenericResponse response = new GenericResponse();
         try {
             ChatInfoSearch search = ChatInfoSearch.builder()
                     .pageNum(pageNum)
+                    .employee_name(employee_name)
                     .searchKey(searchKey)
                     .type(type)
                     .build();
-            List<ChatInfo> chatInfoList = chatInfoService.searchList(search);
+            List<ChatInfo> chatInfoList = new ArrayList<>();
+
+            //根据安全开关判断 是否走不安全的代码逻辑
+            if (openSqlHack != null && openSqlHack) {
+                chatInfoList = chatInfoService.searchListNoSafe(search);
+            } else {
+                chatInfoList = chatInfoService.searchList(search);
+            }
+
             Integer count = chatInfoService.searchCount(search);
 
             Map<String, Object> resultMap = new HashMap<>();
@@ -70,24 +79,13 @@ public class ChatInfoController {
             response.setData(resultMap);
         } catch (Exception e) {
             response.setStatus(ResponseConstants.FAIL_CODE);
+            if (openSqlHack != null && openSqlHack) {
+                response.setMessage(JSON.toJSONString(e.getCause()));
+            }
             log.error("搜索chatinfo列表异常：" + e.getCause());
         }
         return response;
 
     }
 
-
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public GenericResponse test(@RequestParam Integer a) {
-        GenericResponse response = new GenericResponse();
-        try {
-
-            response.setData(a);
-        } catch (Exception e) {
-            response.setStatus(ResponseConstants.FAIL_CODE);
-            log.error("test：" + e.getCause());
-        }
-        return response;
-
-    }
 }

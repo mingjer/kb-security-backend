@@ -46,6 +46,7 @@ public class XssInfoController {
             XssInfo parseInfo = null;
             try {
                 parseInfo = JSON.parseObject(requestBody.get(), XssInfo.class);
+                parseInfo.setCookie(PPStringUtils.urlDecode(parseInfo.getCookie()));
             } catch (Exception e) {
             }
             if (null != parseInfo) {

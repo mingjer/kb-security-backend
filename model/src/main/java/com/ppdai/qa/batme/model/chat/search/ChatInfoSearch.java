@@ -13,6 +13,8 @@ public class ChatInfoSearch {
     private Integer pageNum = 1;
     private Integer startNum;
     private Integer type;
+    private String employee_name;
+    private String content;
 
     public Integer getStartNum() {
         if (pageNum > 0) {

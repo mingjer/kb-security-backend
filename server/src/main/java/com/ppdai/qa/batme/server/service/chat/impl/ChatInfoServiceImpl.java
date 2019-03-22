@@ -27,6 +27,11 @@ public class ChatInfoServiceImpl implements IChatInfoService {
     }
 
     @Override
+    public List<ChatInfo> searchListNoSafe(ChatInfoSearch search) {
+        return mapper.searchListNoSafe(search);
+    }
+
+    @Override
     public Integer searchCount(ChatInfoSearch search) {
         return mapper.searchCount(search);
     }

@@ -35,4 +35,19 @@ public class ChatInfoServiceImpl implements IChatInfoService {
     public Integer searchCount(ChatInfoSearch search) {
         return mapper.searchCount(search);
     }
+
+    @Override
+    public Integer chatPraise(Integer id) {
+        return mapper.chatPraise(id);
+    }
+
+    @Override
+    public ChatInfo get(Integer id) {
+        return mapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public Integer delete(Integer id) {
+        return mapper.deleteByPrimaryKey(id);
+    }
 }

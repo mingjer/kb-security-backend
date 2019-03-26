@@ -14,4 +14,10 @@ public interface IChatInfoService {
     List<ChatInfo> searchListNoSafe(ChatInfoSearch search);
 
     Integer searchCount(ChatInfoSearch search);
+
+    Integer chatPraise(Integer id);
+
+    ChatInfo get(Integer id);
+
+    Integer delete(Integer id);
 }

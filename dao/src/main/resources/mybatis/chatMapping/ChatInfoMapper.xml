@@ -7,9 +7,10 @@
         <result column="content" property="content" jdbcType="VARCHAR"/>
         <result column="employee_name" property="employee_name" jdbcType="VARCHAR"/>
         <result column="create_time" property="create_time" jdbcType="TIMESTAMP"/>
+        <result column="praise_count" property="praise_count" jdbcType="INTEGER"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, title, content, employee_name, create_time
+    id, title, content, employee_name, create_time,praise_count
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
@@ -83,14 +84,15 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.ppdai.qa.batme.model.chat.entity.ChatInfo">
-    update chat_info
-    set title = #{title,jdbcType=VARCHAR},
-      content = #{content,jdbcType=VARCHAR},
-      employee_name = #{employee_name,jdbcType=VARCHAR},
-      create_time = #{create_time,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+
+    <update id="chatPraise" parameterType="com.ppdai.qa.batme.model.chat.entity.ChatInfo">
+        update chat_info
+        <set>
+            praise_count=praise_count+1
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
 
     <select id="searchList" resultMap="BaseResultMap"
             parameterType="com.ppdai.qa.batme.model.chat.search.ChatInfoSearch">
@@ -101,13 +103,11 @@
         <if test="searchKey != null and searchKey.length>0">
             and (title like CONCAT('%',#{searchKey},'%'))
         </if>
-        <if test="type !=null">
-            <if test="type==1">
-                order by id desc
-            </if>
-            <if test="type==2">
-                order by id desc
-            </if>
+        <if test="type !=null and type==1">
+            order by id desc
+        </if>
+        <if test="type !=null and type==2">
+            order by praise_count desc
         </if>
         <choose>
             <when test="pageSize != null and pageNum !=null">
@@ -135,13 +135,11 @@
         <if test="content != null and content.length>0">
             and content like '${content}'
         </if>
-        <if test="type !=null">
-            <if test="type==1">
-                order by id desc
-            </if>
-            <if test="type==2">
-                order by id desc
-            </if>
+        <if test="type !=null and type==1">
+            order by id desc
+        </if>
+        <if test="type !=null and type==2">
+            order by praise_count desc
         </if>
         <choose>
             <when test="pageSize != null and pageNum !=null">

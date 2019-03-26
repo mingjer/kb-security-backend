@@ -22,4 +22,6 @@ public interface ChatInfoMapper {
 
 
     Integer searchCount(ChatInfoSearch search);
+
+    Integer chatPraise(Integer id);
 }

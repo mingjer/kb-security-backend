@@ -3,17 +3,21 @@ package com.ppdai.qa.batme.server.controller.chat;
 import com.alibaba.fastjson.JSON;
 import com.ppdai.qa.batme.contract.common.GenericResponse;
 import com.ppdai.qa.batme.core.constants.ResponseConstants;
+import com.ppdai.qa.batme.core.constants.UserInfoConstants;
 import com.ppdai.qa.batme.model.chat.entity.ChatInfo;
 import com.ppdai.qa.batme.model.chat.search.ChatInfoSearch;
+import com.ppdai.qa.batme.model.user.entity.UserInfo;
 import com.ppdai.qa.batme.server.service.chat.IChatInfoService;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.sql.*;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.Date;
 
 @RestController
 @Slf4j
@@ -42,6 +46,33 @@ public class ChatInfoController {
         }
         return response;
     }
+
+    /**
+     * 操作chatinfo
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/chatinfos/{id}")
+    public GenericResponse chat_info_detail(@PathVariable("id") @NonNull Integer id, HttpServletRequest request) {
+        GenericResponse response = new GenericResponse();
+        try {
+            if (request.getMethod().equals(RequestMethod.GET.name())) {
+                ChatInfo chatInfo = chatInfoService.get(id);
+                response.setData(chatInfo);
+            } else if (request.getMethod().equals(RequestMethod.DELETE.name())) {
+                Integer count = chatInfoService.delete(id);
+                response.setData(count);
+            }
+
+            response.setStatus(ResponseConstants.SUCCESS_CODE);
+        } catch (Exception e) {
+            response.setStatus(ResponseConstants.FAIL_CODE);
+            log.error("操作chatInfo异常：" + e.getCause());
+        }
+        return response;
+    }
+
 
     /**
      * 搜索chatinfo 列表
@@ -86,6 +117,29 @@ public class ChatInfoController {
         }
         return response;
 
+    }
+
+    /**
+     * 点赞
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/chat/praise", method = RequestMethod.GET)
+    public GenericResponse chat_praise(@RequestParam Integer id) {
+        GenericResponse response = new GenericResponse();
+        Session session = SecurityUtils.getSubject().getSession();
+        UserInfo userInfo = (UserInfo) session.getAttribute(UserInfoConstants.CURRENT_USER);
+        if (userInfo != null) {
+
+            Integer count = chatInfoService.chatPraise(id);
+            response.setStatus(ResponseConstants.SUCCESS_CODE);
+            response.setData(count);
+        } else {
+            response.setStatus(ResponseConstants.FAIL_CODE);
+            response.setMessage("请登录后再操作！");
+        }
+        return response;
     }
 
 }

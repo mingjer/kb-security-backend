@@ -26,7 +26,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
 
 
 @RestController
@@ -57,17 +56,17 @@ public class UserInfoController {
 
             if (request.getCookie_type() == CookieTypeEnum.ID.getCode()) {
                 //登录成功   设置ID_COOKIE
-                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.ID_SESSION, String.valueOf(info.getId()));
+                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.ID_SESSION, String.valueOf(info.getId()),request.getHttp_only());
             }
 
             if (request.getCookie_type() == CookieTypeEnum.BASE64_ID.getCode()) {
                 //登录成功   设置BASE64_ID_COOKIE
-                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.BASE64_ID_SESSION, PPBase64Utils.encodeBase64(info.getId().toString()));
+                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.BASE64_ID_SESSION, PPBase64Utils.encodeBase64(info.getId().toString()),request.getHttp_only());
             }
 
             if (request.getCookie_type() == CookieTypeEnum.SESSION_ID.getCode()) {
                 //登录成功   设置BASE64_ID_COOKIE
-                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.BATME_SESSIONID, SecurityUtils.getSubject().getSession().getId() == null ? null : (String) SecurityUtils.getSubject().getSession().getId());
+                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.BATME_SESSIONID, SecurityUtils.getSubject().getSession().getId() == null ? null : (String) SecurityUtils.getSubject().getSession().getId(),request.getHttp_only());
             }
 
             response.setMessage("登录成功");
@@ -96,13 +95,13 @@ public class UserInfoController {
      * @param name
      * @param value
      */
-    private void addCookieAndDelSession(HttpServletRequest request, HttpServletResponse response, String name, String value) {
+    private void addCookieAndDelSession(HttpServletRequest request, HttpServletResponse response, String name, String value,Boolean httpOnly) {
         Cookie cookie = new Cookie(name, null);
-        cookie.setHttpOnly(false);
+        cookie.setHttpOnly(httpOnly);
         cookie.setPath("/");
         cookie.setValue(value);
         response.addCookie(cookie);
-
+        // 删除非本次的cookie
         if (null != request.getCookies())
             for (Cookie requestCookie : request.getCookies()) {
                 if (requestCookie.getName().contains("SESSION") && !requestCookie.getName().equals(name)) {

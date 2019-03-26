@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class LoginRequest {
     private String login_name;
     private String login_pwd;
+    private Integer cookie_type;
 }

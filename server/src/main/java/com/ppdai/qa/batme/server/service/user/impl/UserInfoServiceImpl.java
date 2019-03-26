@@ -36,4 +36,9 @@ public class UserInfoServiceImpl implements IUserInfoService {
         }
 
     }
+
+    @Override
+    public UserInfo get(Integer id) {
+        return mapper.selectByPrimaryKey(id);
+    }
 }

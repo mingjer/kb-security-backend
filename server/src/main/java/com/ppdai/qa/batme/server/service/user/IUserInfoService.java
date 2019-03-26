@@ -10,4 +10,6 @@ public interface IUserInfoService {
     List<UserInfo> selectList(UserInfo userInfo);
 
     UserInfo findByName(String name);
+
+    UserInfo get(Integer id);
 }

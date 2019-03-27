@@ -2,20 +2,25 @@ package com.ppdai.qa.batme.server.controller.chat;
 
 import com.alibaba.fastjson.JSON;
 import com.ppdai.qa.batme.contract.common.GenericResponse;
+import com.ppdai.qa.batme.core.constants.CookieConstants;
 import com.ppdai.qa.batme.core.constants.ResponseConstants;
 import com.ppdai.qa.batme.core.constants.UserInfoConstants;
+import com.ppdai.qa.batme.core.utils.PPBase64Utils;
 import com.ppdai.qa.batme.model.chat.entity.ChatInfo;
 import com.ppdai.qa.batme.model.chat.search.ChatInfoSearch;
 import com.ppdai.qa.batme.model.user.entity.UserInfo;
 import com.ppdai.qa.batme.server.service.chat.IChatInfoService;
+import com.ppdai.qa.batme.server.service.user.IUserInfoService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.http.MediaType;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
@@ -24,6 +29,8 @@ import java.util.*;
 public class ChatInfoController {
     @Resource
     private IChatInfoService chatInfoService;
+    @Resource
+    private IUserInfoService userInfoService;
 
     /**
      * 添加chatinfo
@@ -32,11 +39,12 @@ public class ChatInfoController {
      * @return
      */
     @RequestMapping(value = "/chatinfos")
-    public GenericResponse add_chat(@RequestBody ChatInfo info) {
+    public GenericResponse add_chat(@RequestBody ChatInfo info, HttpServletRequest request) {
         GenericResponse response = new GenericResponse();
         try {
             info.setCreate_time(new Date());
-            info.setEmployee_name("孔彬");
+            UserInfo userInfo = getUser(request);
+            info.setEmployee_name(userInfo.getLogin_name());
             Integer count = chatInfoService.insert(info);
             response.setData(count);
             response.setStatus(ResponseConstants.SUCCESS_CODE);
@@ -140,6 +148,29 @@ public class ChatInfoController {
             response.setMessage("请登录后再操作！");
         }
         return response;
+    }
+
+    /**
+     * 获取登录用户信息
+     *
+     * @param request
+     * @return
+     */
+    private UserInfo getUser(HttpServletRequest request) {
+        Session session = SecurityUtils.getSubject().getSession();
+        UserInfo userInfo = null;
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(CookieConstants.ID_SESSION)) {
+                userInfo = userInfoService.get(Integer.valueOf(cookie.getValue()));
+            } else if (cookie.getName().equals(CookieConstants.BASE64_ID_SESSION)) {
+                userInfo = userInfoService.get(Integer.valueOf(PPBase64Utils.decodeBase64(cookie.getValue())));
+            }
+        }
+        if (ObjectUtils.isEmpty(userInfo))
+            userInfo = (UserInfo) session.getAttribute(UserInfoConstants.CURRENT_USER);
+
+        return userInfo;
     }
 
 }

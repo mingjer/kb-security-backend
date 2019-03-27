@@ -2,12 +2,16 @@ package com.ppdai.qa.batme.server.controller.user;
 
 import com.ppdai.qa.batme.contract.common.GenericResponse;
 import com.ppdai.qa.batme.contract.user.request.LoginRequest;
+import com.ppdai.qa.batme.contract.user.request.RegisterRequest;
 import com.ppdai.qa.batme.contract.user.response.LoginResponse;
 import com.ppdai.qa.batme.core.constants.CookieConstants;
 import com.ppdai.qa.batme.core.constants.ResponseConstants;
 import com.ppdai.qa.batme.core.constants.UserInfoConstants;
 import com.ppdai.qa.batme.core.enums.CookieTypeEnum;
+import com.ppdai.qa.batme.core.enums.EncryptTypeEnum;
+import com.ppdai.qa.batme.core.utils.PPAesUtils;
 import com.ppdai.qa.batme.core.utils.PPBase64Utils;
+import com.ppdai.qa.batme.core.utils.PPMd5Utils;
 import com.ppdai.qa.batme.model.user.entity.UserInfo;
 import com.ppdai.qa.batme.server.service.user.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +30,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 
 @RestController
@@ -46,7 +51,7 @@ public class UserInfoController {
         Subject subject = SecurityUtils.getSubject();
         response.setStatus(ResponseConstants.FAIL_CODE);
         UserInfo info = userInfoService.findByName(request.getLogin_name());
-        UsernamePasswordToken token = new UsernamePasswordToken(request.getLogin_name(), request.getLogin_pwd());
+        UsernamePasswordToken token = new UsernamePasswordToken(request.getLogin_name(), encrypPwd(info.getEncrypt_type(), request.getLogin_pwd()));
         try {
             //登录验证
             subject.login(token);
@@ -56,17 +61,17 @@ public class UserInfoController {
 
             if (request.getCookie_type() == CookieTypeEnum.ID.getCode()) {
                 //登录成功   设置ID_COOKIE
-                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.ID_SESSION, String.valueOf(info.getId()),request.getHttp_only());
+                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.ID_SESSION, String.valueOf(info.getId()), request.getHttp_only());
             }
 
             if (request.getCookie_type() == CookieTypeEnum.BASE64_ID.getCode()) {
                 //登录成功   设置BASE64_ID_COOKIE
-                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.BASE64_ID_SESSION, PPBase64Utils.encodeBase64(info.getId().toString()),request.getHttp_only());
+                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.BASE64_ID_SESSION, PPBase64Utils.encodeBase64(info.getId().toString()), request.getHttp_only());
             }
 
             if (request.getCookie_type() == CookieTypeEnum.SESSION_ID.getCode()) {
                 //登录成功   设置BASE64_ID_COOKIE
-                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.BATME_SESSIONID, SecurityUtils.getSubject().getSession().getId() == null ? null : (String) SecurityUtils.getSubject().getSession().getId(),request.getHttp_only());
+                addCookieAndDelSession(httpServletRequest, httpServletResponse, CookieConstants.BATME_SESSIONID, SecurityUtils.getSubject().getSession().getId() == null ? null : (String) SecurityUtils.getSubject().getSession().getId(), request.getHttp_only());
             }
 
             response.setMessage("登录成功");
@@ -95,7 +100,7 @@ public class UserInfoController {
      * @param name
      * @param value
      */
-    private void addCookieAndDelSession(HttpServletRequest request, HttpServletResponse response, String name, String value,Boolean httpOnly) {
+    private void addCookieAndDelSession(HttpServletRequest request, HttpServletResponse response, String name, String value, Boolean httpOnly) {
         Cookie cookie = new Cookie(name, null);
         cookie.setHttpOnly(httpOnly);
         cookie.setPath("/");
@@ -163,7 +168,7 @@ public class UserInfoController {
      * @return
      */
     @RequestMapping(value = "/user/info", method = RequestMethod.GET)
-    public GenericResponse getUserInfo(HttpServletRequest request, HttpServletResponse response) {
+    public GenericResponse get_user_info(HttpServletRequest request, HttpServletResponse response) {
         GenericResponse genericResponse = new GenericResponse();
         try {
             Session session = SecurityUtils.getSubject().getSession();
@@ -194,5 +199,71 @@ public class UserInfoController {
         }
         return genericResponse;
 
+    }
+
+    /**
+     * 注册
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public GenericResponse register_user_info(@RequestBody RegisterRequest request) {
+        GenericResponse response = new GenericResponse();
+        try {
+            UserInfo userInfo = userInfoService.findByName(request.getLogin_name());
+            if (userInfo.getId() != null) {
+                response.setStatus(ResponseConstants.FAIL_CODE);
+                response.setMessage("账号已存在！");
+                return response;
+            }
+
+            Integer count = userInfoService.insert(UserInfo.builder()
+                    .login_name(request.getLogin_name())
+                    .login_pwd(encrypPwd(request.getEncrypt_type(), request.getLogin_pwd()))
+                    .create_time(new Date())
+                    .encrypt_type(request.getEncrypt_type())
+                    .update_time(new Date())
+                    .build());
+
+            //注册成功后，自动登录
+            UsernamePasswordToken token = new UsernamePasswordToken(request.getLogin_name(), encrypPwd(request.getEncrypt_type(), request.getLogin_pwd()));
+            SecurityUtils.getSubject().login(token);
+
+            response.setStatus(ResponseConstants.SUCCESS_CODE);
+            response.setData(count);
+        } catch (Exception e) {
+            response.setStatus(ResponseConstants.FAIL_CODE);
+            response.setMessage("账号注册异常！");
+        }
+        return response;
+    }
+
+    /**
+     * 获取加密后的密码
+     *
+     * @param encrypType
+     * @param pwd
+     * @return
+     */
+    private String encrypPwd(Integer encrypType, String pwd) {
+        String login_pwd = null;
+        switch (EncryptTypeEnum.getByCode(encrypType)) {
+            case NO_ENCRYPT:
+                login_pwd = pwd;
+                break;
+            case BASE64:
+                login_pwd = PPBase64Utils.encodeBase64(pwd);
+                break;
+            case MD5:
+                login_pwd = PPMd5Utils.encodeMd5(pwd);
+                break;
+            case AES:
+                login_pwd = PPAesUtils.encodeAES(pwd);
+                break;
+            default:
+                break;
+        }
+        return login_pwd;
     }
 }

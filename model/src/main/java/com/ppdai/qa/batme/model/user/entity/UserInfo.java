@@ -18,7 +18,7 @@ public class UserInfo {
 
     private String login_pwd;
 
-    private Integer encry_type;
+    private Integer encrypt_type;
 
     private Date create_time;
 

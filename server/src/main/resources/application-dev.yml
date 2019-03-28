@@ -41,3 +41,7 @@ spring:
 security:
   session:
     httponly: false
+  xss:
+    filter: false
+  sql:
+    filter: false

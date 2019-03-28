@@ -15,6 +15,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,9 @@ public class ChatInfoController {
     private IChatInfoService chatInfoService;
     @Resource
     private IUserInfoService userInfoService;
+
+    @Value("${security.sql.filter:#{false}}")
+    private Boolean sqlFilterOpen;
 
     /**
      * 添加chatinfo
@@ -103,7 +107,7 @@ public class ChatInfoController {
             List<ChatInfo> chatInfoList = new ArrayList<>();
 
             //根据安全开关判断 是否走不安全的代码逻辑
-            if (openSqlHack != null && openSqlHack) {
+            if (openSqlHack != null && openSqlHack && !sqlFilterOpen) {
                 chatInfoList = chatInfoService.searchListNoSafe(search);
             } else {
                 chatInfoList = chatInfoService.searchList(search);

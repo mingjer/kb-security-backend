@@ -87,6 +87,7 @@ public class XssParameterRequestWrapper extends HttpServletRequestWrapper {
     /**
      * 重写getParameterValues
      */
+    @Override
     public String[] getParameterValues(String name) {//同上
         return params.get(name);
     }

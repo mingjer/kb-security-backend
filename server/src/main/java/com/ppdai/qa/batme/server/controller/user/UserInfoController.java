@@ -51,6 +51,11 @@ public class UserInfoController {
         Subject subject = SecurityUtils.getSubject();
         response.setStatus(ResponseConstants.FAIL_CODE);
         UserInfo info = userInfoService.findByName(request.getLogin_name());
+        if(info.getId()==null||info.getId()<=0){
+            response.setMessage("账号不存在");
+            response.setStatus(ResponseConstants.STATUS_WRONG_PWD);
+            return response;
+        }
         UsernamePasswordToken token = new UsernamePasswordToken(request.getLogin_name(), encrypPwd(info.getEncrypt_type(), request.getLogin_pwd()));
         try {
             //登录验证

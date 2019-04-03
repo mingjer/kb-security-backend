@@ -12,6 +12,7 @@ import com.ppdai.qa.batme.core.enums.EncryptTypeEnum;
 import com.ppdai.qa.batme.core.utils.PPAesUtils;
 import com.ppdai.qa.batme.core.utils.PPBase64Utils;
 import com.ppdai.qa.batme.core.utils.PPMd5Utils;
+import com.ppdai.qa.batme.core.utils.PPRsaUtils;
 import com.ppdai.qa.batme.model.user.entity.UserInfo;
 import com.ppdai.qa.batme.server.service.user.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,7 @@ public class UserInfoController {
         Subject subject = SecurityUtils.getSubject();
         response.setStatus(ResponseConstants.FAIL_CODE);
         UserInfo info = userInfoService.findByName(request.getLogin_name());
-        if(info.getId()==null||info.getId()<=0){
+        if (info.getId() == null || info.getId() <= 0) {
             response.setMessage("账号不存在");
             response.setStatus(ResponseConstants.STATUS_WRONG_PWD);
             return response;
@@ -252,23 +253,19 @@ public class UserInfoController {
      * @return
      */
     private String encrypPwd(Integer encrypType, String pwd) {
-        String login_pwd = null;
         switch (EncryptTypeEnum.getByCode(encrypType)) {
             case NO_ENCRYPT:
-                login_pwd = pwd;
-                break;
+                return pwd;
             case BASE64:
-                login_pwd = PPBase64Utils.encodeBase64(pwd);
-                break;
+                return PPBase64Utils.encodeBase64(pwd);
             case MD5:
-                login_pwd = PPMd5Utils.encodeMd5(pwd);
-                break;
+                return PPMd5Utils.encodeMd5(pwd);
             case AES:
-                login_pwd = PPAesUtils.encodeAES(pwd);
-                break;
+                return PPAesUtils.encodeAES(pwd);
+            case RSA:
+                return PPRsaUtils.encodeRsaByPriKey(pwd, PPRsaUtils.BATME_PRIVATE_KEY);
             default:
-                break;
+                return null;
         }
-        return login_pwd;
     }
 }

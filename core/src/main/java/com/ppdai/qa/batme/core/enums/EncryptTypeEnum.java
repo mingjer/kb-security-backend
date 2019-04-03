@@ -2,7 +2,7 @@ package com.ppdai.qa.batme.core.enums;
 
 public enum EncryptTypeEnum {
     //类型： 1. img 2. screen 3. md5 4. aes
-    NO_ENCRYPT(1, "明文"), BASE64(2, "BASE64"), MD5(3, "MD5"), AES(4, "AES");
+    NO_ENCRYPT(1, "明文"), BASE64(2, "BASE64"), MD5(3, "MD5"), AES(4, "AES"),RSA(5, "RSA");
 
     public Integer getCode() {
         return code;

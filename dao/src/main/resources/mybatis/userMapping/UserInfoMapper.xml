@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.ppdai.qa.batme.dao.mapper.user.UserInfoMapper">
-    <resultMap id="BaseResultMap" type="com.ppdai.qa.batme.model.user.entity.UserInfo">
+<mapper namespace="com.bin.kong.security.dao.mapper.user.UserInfoMapper">
+    <resultMap id="BaseResultMap" type="com.bin.kong.security.model.user.entity.UserInfo">
         <id column="id" property="id" jdbcType="INTEGER"/>
         <result column="login_name" property="login_name" jdbcType="VARCHAR"/>
         <result column="login_pwd" property="login_pwd" jdbcType="VARCHAR"/>
@@ -26,7 +26,7 @@
     delete from user_info
     where id = #{id,jdbcType=INTEGER}
   </delete>
-    <insert id="insertSelective" parameterType="com.ppdai.qa.batme.model.user.entity.UserInfo">
+    <insert id="insertSelective" parameterType="com.bin.kong.security.model.user.entity.UserInfo">
         insert into user_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -87,7 +87,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.ppdai.qa.batme.model.user.entity.UserInfo">
+    <update id="updateByPrimaryKeySelective" parameterType="com.bin.kong.security.model.user.entity.UserInfo">
         update user_info
         <set>
             <if test="login_name != null">
@@ -120,7 +120,7 @@
 
 
     <select id="selectList" resultMap="BaseResultMap"
-            parameterType="com.ppdai.qa.batme.model.user.entity.UserInfo">
+            parameterType="com.bin.kong.security.model.user.entity.UserInfo">
         select
         <include refid="Base_Column_List"/>
         from user_info

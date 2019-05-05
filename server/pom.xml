@@ -3,12 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.ppdai.qa.batme</groupId>
-        <artifactId>batme-backend</artifactId>
+        <groupId>com.bin.kong.security</groupId>
+        <artifactId>kb-security-backend</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.ppdai.qa.batme</groupId>
+    <groupId>com.bin.kong.security</groupId>
     <artifactId>server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>server</name>
@@ -22,25 +22,25 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.ppdai.qa.batme</groupId>
+            <groupId>com.bin.kong.security</groupId>
             <artifactId>model</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.ppdai.qa.batme</groupId>
+            <groupId>com.bin.kong.security</groupId>
             <artifactId>dao</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.ppdai.qa.batme</groupId>
+            <groupId>com.bin.kong.security</groupId>
             <artifactId>contract</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.ppdai.qa.batme</groupId>
+            <groupId>com.bin.kong.security</groupId>
             <artifactId>core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>

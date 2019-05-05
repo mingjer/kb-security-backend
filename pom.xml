@@ -8,10 +8,10 @@
         <version>2.1.3.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.ppdai.qa.batme</groupId>
-    <artifactId>batme-backend</artifactId>
+    <groupId>com.bin.kong.security</groupId>
+    <artifactId>kb-security-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>batme-backend</name>
+    <name>kb-security-backend</name>
     <packaging>pom</packaging>
 
     <description>Demo project for Spring Boot</description>
@@ -83,12 +83,4 @@
             <version>1.3.2</version>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>ppdai</id>
-            <name>ppdai</name>
-            <url>http://maven.repo.ppdai.com/nexus/content/groups/public/</url>
-        </repository>
-    </repositories>
 </project>
